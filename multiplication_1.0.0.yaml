@@ -1,0 +1,90 @@
+---
+swagger: "2.0"
+info:
+  x-ibm-name: "multiplication"
+  title: "Multiplication"
+  version: "1.0.0"
+schemes:
+- "https"
+host: "$(catalog.host)"
+basePath: "/multiplication"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+securityDefinitions:
+  clientIdHeader:
+    type: "apiKey"
+    in: "header"
+    name: "X-IBM-Client-Id"
+security:
+- clientIdHeader: []
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  assembly:
+    execute:
+    - map:
+        title: "map"
+        inputs:
+          a:
+            schema:
+              type: "integer"
+            variable: "request.parameters.a"
+          b:
+            schema:
+              type: "integer"
+            variable: "request.parameters.b"
+        outputs:
+          response:
+            schema:
+              $ref: "#/definitions/res"
+            variable: "message.body"
+        actions:
+        - set: "response.new-property-1"
+          from:
+          - "a"
+          - "b"
+          value: "$(a)*$(b)"
+        version: "1.0.0"
+  phase: "realized"
+paths:
+  /Mul:
+    get:
+      responses:
+        200:
+          description: "200 OK"
+          schema:
+            $ref: "#/definitions/res"
+      parameters:
+      - name: "a"
+        type: "integer"
+        required: true
+        in: "query"
+        format: "int32"
+      - name: "b"
+        type: "integer"
+        required: true
+        in: "query"
+        format: "int32"
+  /Input:
+    post:
+      responses:
+        200:
+          description: "200 OK"
+      parameters:
+      - name: "id"
+        type: "integer"
+        required: false
+        in: "query"
+        format: "int32"
+tags: []
+definitions:
+  res:
+    properties:
+      new-property-1:
+        type: "integer"
+        format: "int32"
+    additionalProperties: false
